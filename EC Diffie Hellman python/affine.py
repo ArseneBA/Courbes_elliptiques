@@ -16,16 +16,16 @@ class Point_aff:
         return self.y ** 2 == self.x ** 3 + a * self.x
 
 
-def add(crd_1, crd_2, p_corps: int = 7):
-    lamb = (crd_2[1] - crd_1[1]) * inversion_mult(crd_2[0] - crd_1[0])
-    x3 = (pow(lamb, 2) - crd_1[0] - crd_2[0]) % p_corps
-    return [x3, (lamb * (crd_1[0] - x3) - crd_1[1]) % p_corps]
+def add(p1, p2, p_corps: int = 7):
+    lamb = (p2[1] - p1[1]) * inversion_mult(p2[0] - p1[0])
+    x3 = (pow(lamb, 2) - p1[0] - p2[0]) % p_corps
+    return [x3, (lamb * (p1[0] - x3) - p1[1]) % p_corps]
 
 
-def double(crd, p_corps: int = 7):
-    lamb = (3 * pow(crd[0], 2) + A) * inversion_mult(2 * crd[1])
-    x3 = (pow(lamb, 2) - 2 * crd[0]) % p_corps
-    return [x3, (lamb * (crd[0] - x3) - crd[1]) % p_corps]
+def double(p, p_corps: int = 7):
+    lamb = (3 * pow(p[0], 2) + A) * inversion_mult(2 * p[1])
+    x3 = (pow(lamb, 2) - 2 * p[0]) % p_corps
+    return [x3, (lamb * (p[0] - x3) - p[1]) % p_corps]
 
 
 def inversion_mult(nb, p_corps: int = 7):
