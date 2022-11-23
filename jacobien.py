@@ -1,5 +1,8 @@
-from Courbes_elliptiques.main import Point_jacob
 from affine import *
+
+
+class Point_jacob:
+    pass
 
 
 class Point_jacob:
@@ -22,7 +25,7 @@ class Point_jacob:
         return pow(p.y, 2, p_corps) == (
                     pow(p.x, 3, p_corps) + a * p.x * pow(p.z, 4, p_corps) + b * pow(p.z, 6, p_corps)) % p_corps
 
-    def add_jacob(self, p2, p_corps: int = 7) -> Point_jacob :
+    def add_jacob(self, p2, p_corps: int = 7) -> Point_jacob:
         p1 = self
         p3 = Point_jacob()
 
