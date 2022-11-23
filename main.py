@@ -1,3 +1,5 @@
+from random import randint
+
 A = 0
 B = 3
 CORPS = 7
@@ -137,8 +139,18 @@ def e_courbe_aff(p: Point_aff, a):
 def homogene(p: Point_jacob, p_corps: int = 7) -> Point_aff:
     return Point_aff((p.x * inversion_mult(p.z) ** 2) % p_corps, (p.y * inversion_mult(p.z) ** 3) % p_corps)
 
-def alice_bob():
-    pass
+
+def alice_bob(p: Point_aff, ordre: int):
+    a = randint(1, ordre)
+    b = randint(1, ordre)
+
+    p_j = Point_jacob(p.x, p.y, 1)
+
+    A = montgomery(p_j, a)
+    B = montgomery(p_j, b)
+
+    print(homogene(montgomery(B, a)))
+    print(homogene(montgomery(A, b)))
 
 if __name__ == "__main__":
     p1 = Point_jacob(5, 3, 1)
@@ -161,4 +173,6 @@ if __name__ == "__main__":
     # print(add_jacob(p1, p3, 7))
     # print(homogene(add_jacob(p1, p3, 7)))
 
+    p4_a = Point_aff(5, 3)
+    alice_bob(p4_a, 13)
 
