@@ -2,7 +2,30 @@ from jacobien import *
 from random import randint
 
 
+def test_add_jacob():
+    p1 = Point_jacob(5, 3, 1)
+    p3 = Point_jacob(1, 5, 1)
+    print("Test addition")
+    print(p1.add_jacob(p3))
+    print(p3.add_jacob(p3))
+
+
+def test_mult_scal():
+    p3 = Point_jacob(1, 5, 1)
+    print("Test mult_scal")
+    print(p3.mult_scal(3).to_affine())
+    print(p3.add_jacob(p3).add_jacob(p3).to_affine())
+
+
+def test_montgomery():
+    p3 = Point_jacob(1, 5, 1)
+    print("Test montgomery")
+    print(p3.mult_scal(3).to_affine())
+    print(p3.montgomery(3).to_affine())
+
+
 def alice_bob(p: Point_aff, ordre: int):
+    print("Alice et Bob")
     a = randint(1, ordre)
     b = randint(1, ordre)
 
@@ -16,25 +39,9 @@ def alice_bob(p: Point_aff, ordre: int):
 
 
 if __name__ == "__main__":
-    # p1 = Point_jacob(5, 3, 1)
-    # p2 = Point_jacob()
-    # p3 = Point_jacob(1, 5, 1)
-    # print(e_courbe_jacob(add_jacob(p1, p3, 7), 0, 3, 7))
-    # print(e_courbe_jacob(p1, 0, 3, 7))
-    # print(add_jacob(p1, p3, 7))
-    # print(add_jacob(p3, p1, 7))
-    # print(mult_scal(p1, 7, 7))
-    # print(montgomery(p1, 7, 7))
-    #
-    # print(p3.mult_scal(3, 7).to_affine())
-    # print(p3.montgomery(3, 7).to_affine())
-    #
-    # print(montgomery(p3, 2, 7))
-
-    # print(homogene(add_jacob(p3, add_jacob(p3, p3))))
-    # print(homogene(add_jacob(add_jacob(p3, p3), p3)))
-    # print(add_jacob(p1, p3, 7))
-    # print(homogene(add_jacob(p1, p3, 7)))
+    test_add_jacob()
+    test_mult_scal()
+    test_montgomery()
 
     p4_a = Point_aff(5, 3)
     alice_bob(p4_a, 13)

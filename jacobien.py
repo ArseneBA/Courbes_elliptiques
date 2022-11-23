@@ -15,7 +15,7 @@ class Point_jacob:
         print(self.x, self.y, self.z)
 
     def to_affine(self, p_corps: int = 7) -> Point_aff:
-        return Point_aff((self.x * inversion_mult(self.z) ** 2) % p_corps, (self.y * inversion_mult(self.z) ** 3) % p_corps)
+        return Point_aff((self.x * pow(inversion_mult(self.z), 2, p_corps)) % p_corps, (self.y * pow(inversion_mult(self.z), 3, p_corps)) % p_corps)
 
     def e_courbe_jacob(self, a, b, p_corps: int = 7):
         p = self
@@ -31,12 +31,12 @@ class Point_jacob:
             y1 = p1.y
             z1 = p1.z
 
-            A = x1 ** 2
-            B = y1 ** 2
-            C = B ** 2
-            D = 2 * ((x1 + B) ** 2 - A - C)
-            E = 3 * A
-            F = E ** 2
+            A = pow(x1, 2, p_corps)
+            B = pow(y1, 2, p_corps)
+            C = pow(B, 2, p_corps)
+            D = (2 * (pow((x1 + B), 2, p_corps) - A - C)) % p_corps
+            E = (3 * A) % p_corps
+            F = pow(E, 2, p_corps)
             p3.x = (F - 2 * D) % p_corps
             p3.y = (E * (D - p3.x) - 8 * C) % p_corps
             p3.z = (2 * y1 * z1) % p_corps
@@ -50,19 +50,19 @@ class Point_jacob:
             y2 = p2.y
             z2 = p2.z
 
-            u1 = x1 * z2 ** 2
-            u2 = x2 * z1 ** 2
-            s1 = y1 * z2 * z2 ** 2
-            s2 = y2 * z1 ** 3
+            u1 = (x1 * pow(z2, 2, p_corps)) % p_corps
+            u2 = (x2 * pow(z1, 2, p_corps)) % p_corps
+            s1 = (y1 * z2 * pow(z2, 2, p_corps)) % p_corps
+            s2 = (y2 * pow(z1, 3, p_corps)) % p_corps
             h = u2 - u1
-            i = (2 * h) ** 2
-            j = h * i
-            r = 2 * (s2 - s1)
+            i = pow((2 * h), 2, p_corps)
+            j = (h * i) % p_corps
+            r = (2 * (s2 - s1)) % p_corps
             v = u1 * i
 
-            p3.x = (r ** 2 - j - 2 * v) % p_corps
+            p3.x = (pow(r, 2, p_corps) - j - 2 * v) % p_corps
             p3.y = (r * (v - p3.x) - 2 * s1 * j) % p_corps
-            p3.z = (((z1 + z2) ** 2 - z1 * z1 - z2 * z2) * h) % p_corps
+            p3.z = ((pow((z1 + z2), 2, p_corps) - z1 * z1 - z2 * z2) * h) % p_corps
 
         return p3
 
@@ -76,7 +76,8 @@ class Point_jacob:
         return res
 
     # Problème -> on voit le if sur la consommation (une étape en plus)
-    # Solution naïve : faire une multiplication en plus (idem que si la valeur du bit vaut 1) et la placer dans une poubelle
+    # Solution naïve : faire une multiplication en plus
+    # (idem que si la valeur du bit vaut 1) et la placer dans une poubelle
 
     def montgomery(self, k: int, p_corps: int = 7) -> Point_jacob:
         # Version plus intelligente du double and add
