@@ -156,22 +156,22 @@ if __name__ == "__main__":
     p1 = Point_jacob(5, 3, 1)
     p2 = Point_jacob()
     p3 = Point_jacob(1, 5, 1)
-    # print(e_courbe_jacob(add_jacob(p1, p3, 7), 0, 3, 7))
-    # print(e_courbe_jacob(p1, 0, 3, 7))
-    # print(add_jacob(p1, p3, 7))
-    # print(add_jacob(p3, p1, 7))
-    # print(mult_scal(p1, 7, 7))
-    # print(montgomery(p1, 7, 7))
-    #
-    # print(homogene(mult_scal(p3, 3, 7)))
-    # print(homogene(montgomery(p3, 3, 7)))
-    #
-    # print(montgomery(p3, 2, 7))
+    print(e_courbe_jacob(add_jacob(p1, p3, 7), 0, 3, 7))
+    print(e_courbe_jacob(p1, 0, 3, 7))
+    print(add_jacob(p1, p3, 7))
+    print(add_jacob(p3, p1, 7))
+    print(mult_scal(p1, 7, 7))
+    print(montgomery(p1, 7, 7))
 
-    # print(homogene(add_jacob(p3, add_jacob(p3, p3))))
-    # print(homogene(add_jacob(add_jacob(p3, p3), p3)))
-    # print(add_jacob(p1, p3, 7))
-    # print(homogene(add_jacob(p1, p3, 7)))
+    print(homogene(mult_scal(p3, 3, 7)))
+    print(homogene(montgomery(p3, 3, 7)))
+
+    print(montgomery(p3, 2, 7))
+
+    print(homogene(add_jacob(p3, add_jacob(p3, p3))))
+    print(homogene(add_jacob(add_jacob(p3, p3), p3)))
+    print(add_jacob(p1, p3, 7))
+    print(homogene(add_jacob(p1, p3, 7)))
 
     p4_a = Point_aff(5, 3)
     alice_bob(p4_a, 13)

@@ -1,3 +1,4 @@
+from Courbes_elliptiques.main import Point_jacob
 from affine import *
 
 
@@ -21,7 +22,7 @@ class Point_jacob:
         return pow(p.y, 2, p_corps) == (
                     pow(p.x, 3, p_corps) + a * p.x * pow(p.z, 4, p_corps) + b * pow(p.z, 6, p_corps)) % p_corps
 
-    def add_jacob(self, p2, p_corps: int = 7) :
+    def add_jacob(self, p2, p_corps: int = 7) -> Point_jacob :
         p1 = self
         p3 = Point_jacob()
 
@@ -65,7 +66,7 @@ class Point_jacob:
 
         return p3
 
-    def mult_scal(self, k, p_corps: int = 7):
+    def mult_scal(self, k, p_corps: int = 7) -> Point_jacob:
         res = p = self
         n = len(bin(k)[2:])
         for i in range(n - 1, 0, -1):
@@ -77,7 +78,7 @@ class Point_jacob:
     # Problème -> on voit le if sur la consommation (une étape en plus)
     # Solution naïve : faire une multiplication en plus (idem que si la valeur du bit vaut 1) et la placer dans une poubelle
 
-    def montgomery(self, k: int, p_corps: int = 7):
+    def montgomery(self, k: int, p_corps: int = 7) -> Point_jacob:
         # Version plus intelligente du double and add
         p_res_0 = self
         p_res_1 = self.add_jacob(self, p_corps)
