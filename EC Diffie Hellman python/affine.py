@@ -1,3 +1,6 @@
+A = 0
+B = 3
+
 class Point_aff:
     def __init__(self, x=0, y=0):
         self.x = x
@@ -17,25 +20,24 @@ class Point_aff:
 
 
 def add(p1, p2, p_corps: int = 7):
-    lamb = (p2[1] - p1[1]) * inversion_mult(p2[0] - p1[0])
-    x3 = (pow(lamb, 2) - p1[0] - p2[0]) % p_corps
-    return [x3, (lamb * (p1[0] - x3) - p1[1]) % p_corps]
+    lamb = (p2.y - p1.y) * inversion_mult(p2.x - p1.x)
+    x3 = (pow(lamb, 2, p_corps) - p1.x - p2.x) % p_corps
+    return Point_aff(x3, (lamb * (p1.x - x3) - p1.y) % p_corps)
 
 
 def double(p, p_corps: int = 7):
-    lamb = (3 * pow(p[0], 2) + A) * inversion_mult(2 * p[1])
-    x3 = (pow(lamb, 2) - 2 * p[0]) % p_corps
-    return [x3, (lamb * (p[0] - x3) - p[1]) % p_corps]
+    lamb = (3 * pow(p.x, 2) + A) * inversion_mult(2 * p.y)
+    x3 = (pow(lamb, 2) - 2 * p.x) % p_corps
+    return Point_aff(x3, (lamb * (p.x - x3) - p.y) % p_corps)
 
 
 def inversion_mult(nb, p_corps: int = 7):
-    return pow(nb, p_corps-2) % p_corps
+    return pow(nb, p_corps-2, p_corps)
 
 
 def square_multiply(a, k, p):
-    res = 1
-    # size = sys.getsizeof(k) * 8
+    res = a
     size = len(bin(k)[2:])
-    for i in range(size + 1):
-        res = (res ** 2) * a ** ((k >> size - i) & 0b1)
-    return res % p
+    for i in range(size - 2, -1, -1):
+        res = (((res ** 2) % p) * a ** ((k >> i) & 0b1)) % p
+    return res

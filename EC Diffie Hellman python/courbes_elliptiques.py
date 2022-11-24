@@ -2,6 +2,24 @@ from jacobien import *
 from random import randint
 
 
+def test_inversion_aff():
+    print(inversion_mult(3, 7))
+
+
+def test_add_aff():
+    p1 = Point_aff(5, 3)
+    p2 = Point_aff(1, 5)
+    print(add(p1, p2))
+
+
+def test_double_aff():
+    p = Point_aff(1, 5)
+    print(double(p))
+
+
+def test_square_multiply():
+    print(square_multiply(5, 10, 7))
+
 def test_add_jacob():
     p1 = Point_jacob(5, 3, 1)
     p3 = Point_jacob(1, 5, 1)
@@ -39,9 +57,14 @@ def alice_bob(p: Point_aff, ordre: int):
 
 
 if __name__ == "__main__":
-    test_add_jacob()
-    test_mult_scal()
-    test_montgomery()
+    # test_inversion_aff()
+    # test_add_aff()
+    # test_double_aff()
+    test_square_multiply()
 
-    p4_a = Point_aff(5, 3)
-    alice_bob(p4_a, 13)
+    # test_add_jacob()
+    # test_mult_scal()
+    # test_montgomery()
+    #
+    # p4_a = Point_aff(5, 3)
+    # alice_bob(p4_a, 13)

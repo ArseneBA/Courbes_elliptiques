@@ -70,12 +70,13 @@ class Point_jacob:
         return p3
 
     def mult_scal(self, k, p_corps: int = 7) -> Point_jacob:
-        res = p = self
+        #double add
+        res = self
         n = len(bin(k)[2:])
         for i in range(n - 1, 0, -1):
             res = res.add_jacob(res, p_corps)
             if (k >> i) & 0b1:
-                res = res.add_jacob(p, p_corps)
+                res = res.add_jacob(self, p_corps)
         return res
 
     # Problème -> on voit le if sur la consommation (une étape en plus)
