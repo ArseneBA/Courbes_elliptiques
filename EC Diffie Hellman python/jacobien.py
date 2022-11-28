@@ -88,17 +88,14 @@ class Point_jacob:
         # Version plus intelligente du double and add
         p_res_0 = self
         p_res_1 = self.add_jacob(self, p_corps)
-        print(p_res_0, p_res_1)
         n = len(bin(k)[2:])
         for i in range(n-1, 0, -1):
-            print(i)
             if ((k >> i) & 0b1) == 1:
                 p_res_0 = p_res_0.add_jacob(p_res_1, p_corps)
                 p_res_1 = p_res_1.add_jacob(p_res_1, p_corps)
             else:
                 p_res_1 = p_res_1.add_jacob(p_res_0, p_corps)
                 p_res_0 = p_res_0.add_jacob(p_res_0, p_corps)
-            print(p_res_0, p_res_1)
         return p_res_0
 
 
