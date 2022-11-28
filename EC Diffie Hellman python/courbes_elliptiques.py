@@ -20,12 +20,14 @@ def test_double_aff():
 def test_square_multiply():
     print(square_multiply(5, 10, 7))
 
+
 def test_add_jacob():
     p1 = Point_jacob(5, 3, 1)
     p3 = Point_jacob(1, 5, 1)
     print("Test addition")
     print(p1.add_jacob(p3))
-    print(p3.add_jacob(p3))
+    print("Test double")
+    print(p1.add_jacob(p1))
 
 
 def test_mult_scal():
@@ -36,10 +38,10 @@ def test_mult_scal():
 
 
 def test_montgomery():
-    p3 = Point_jacob(1, 5, 1)
+    p = Point_jacob(5, 3, 1)
     print("Test montgomery")
-    print(p3.mult_scal(3).to_affine())
-    print(p3.montgomery(3).to_affine())
+    print(p.mult_scal(8).to_affine())
+    print(p.montgomery(8).to_affine())
 
 
 def alice_bob(p: Point_aff, ordre: int):
@@ -57,14 +59,14 @@ def alice_bob(p: Point_aff, ordre: int):
 
 
 if __name__ == "__main__":
-    # test_inversion_aff()
-    # test_add_aff()
-    # test_double_aff()
+    test_inversion_aff()
+    test_add_aff()
+    test_double_aff()
     test_square_multiply()
 
-    # test_add_jacob()
-    # test_mult_scal()
-    # test_montgomery()
-    #
-    # p4_a = Point_aff(5, 3)
-    # alice_bob(p4_a, 13)
+    test_add_jacob()
+    test_mult_scal()
+    test_montgomery()
+
+    p4_a = Point_aff(5, 3)
+    alice_bob(p4_a, 13)

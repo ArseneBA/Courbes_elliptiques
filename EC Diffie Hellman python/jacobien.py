@@ -18,7 +18,8 @@ class Point_jacob:
         print(self.x, self.y, self.z)
 
     def to_affine(self, p_corps: int = 7) -> Point_aff:
-        return Point_aff((self.x * pow(inversion_mult(self.z), 2, p_corps)) % p_corps, (self.y * pow(inversion_mult(self.z), 3, p_corps)) % p_corps)
+        return Point_aff((self.x * pow(inversion_mult(self.z), 2, p_corps)) % p_corps,
+                         (self.y * pow(inversion_mult(self.z), 3, p_corps)) % p_corps)
 
     def e_courbe_jacob(self, a, b, p_corps: int = 7):
         p = self
@@ -40,9 +41,9 @@ class Point_jacob:
             D = (2 * (pow((x1 + B), 2, p_corps) - A - C)) % p_corps
             E = (3 * A) % p_corps
             F = pow(E, 2, p_corps)
-            p3.x = (F - 2 * D) % p_corps
-            p3.y = (E * (D - p3.x) - 8 * C) % p_corps
-            p3.z = (2 * y1 * z1) % p_corps
+            p3.x = (F - (2 * D) % p_corps) % p_corps
+            p3.y = ((E * (D - p3.x)) % p_corps - (8 * C) % p_corps) % p_corps
+            p3.z = (((2 * y1) % p_corps) * z1) % p_corps
 
         else:
             x1 = p1.x
@@ -55,22 +56,22 @@ class Point_jacob:
 
             u1 = (x1 * pow(z2, 2, p_corps)) % p_corps
             u2 = (x2 * pow(z1, 2, p_corps)) % p_corps
-            s1 = (y1 * z2 * pow(z2, 2, p_corps)) % p_corps
+            s1 = (((y1 * z2) % p_corps) * pow(z2, 2, p_corps)) % p_corps
             s2 = (y2 * pow(z1, 3, p_corps)) % p_corps
             h = u2 - u1
             i = pow((2 * h), 2, p_corps)
             j = (h * i) % p_corps
             r = (2 * (s2 - s1)) % p_corps
-            v = u1 * i
+            v = (u1 * i) % p_corps
 
-            p3.x = (pow(r, 2, p_corps) - j - 2 * v) % p_corps
-            p3.y = (r * (v - p3.x) - 2 * s1 * j) % p_corps
-            p3.z = ((pow((z1 + z2), 2, p_corps) - z1 * z1 - z2 * z2) * h) % p_corps
+            p3.x = (pow(r, 2, p_corps) - j - (2 * v) % p_corps) % p_corps
+            p3.y = ((r * (v - p3.x)) % p_corps - (((2 * s1) % p_corps) * j) % p_corps) % p_corps
+            p3.z = ((pow((z1 + z2), 2, p_corps) - (z1 * z1) % p_corps - (z2 * z2) % p_corps) * h) % p_corps
 
         return p3
 
     def mult_scal(self, k, p_corps: int = 7) -> Point_jacob:
-        #double add
+        # double add
         res = self
         n = len(bin(k)[2:])
         for i in range(n - 1, 0, -1):
@@ -87,14 +88,17 @@ class Point_jacob:
         # Version plus intelligente du double and add
         p_res_0 = self
         p_res_1 = self.add_jacob(self, p_corps)
+        print(p_res_0, p_res_1)
         n = len(bin(k)[2:])
         for i in range(n-1, 0, -1):
+            print(i)
             if ((k >> i) & 0b1) == 1:
                 p_res_0 = p_res_0.add_jacob(p_res_1, p_corps)
                 p_res_1 = p_res_1.add_jacob(p_res_1, p_corps)
             else:
                 p_res_1 = p_res_1.add_jacob(p_res_0, p_corps)
                 p_res_0 = p_res_0.add_jacob(p_res_0, p_corps)
+            print(p_res_0, p_res_1)
         return p_res_0
 
 
