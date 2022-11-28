@@ -1,6 +1,8 @@
 // Libraries
 #include <stdio.h>
 #include <gmp.h>  // ajouter -lgmp lors de la compilation, 
+#include <stdlib.h>
+#include <time.h>
 
 // Struct
 typedef struct
@@ -222,6 +224,13 @@ void test_p_aff_double()
 void p_jac_printf(const Point_jac p)
 {
     gmp_printf("(%Zd, %Zd, %Zd)\n", p.x, p.y, p.z);
+}
+
+void p_jac_cp(Point_jac* dest, const Point_jac src)
+{
+    mpz_set(dest->x, src.x);
+    mpz_set(dest->y, src.y);
+    mpz_set(dest->z, src.z);    
 }
 
 void p_jac_init_em(Point_jac* p)
@@ -460,20 +469,118 @@ void test_p_jac_dbl()
     mpz_clear(module);
 }
 
-/* void p_jac_mult_scal(Point_jac* p_res0, const Point_jac p, const mpz_t k, const mpz_t module)
+void p_jac_mult_scal(Point_jac* p_0, const Point_jac p, const mpz_t k, const mpz_t module)
 {
     // We implement it with Montgomery ladder
-    mpz_set(p_res.x, p.x);
-    mpz_set(p_res.y, p.y);
-    mpz_set(p_res.z, p.z);
+    Point_jac p_res_calc;
+    p_jac_init_em(&p_res_calc);
 
-    Point_jac p_res1;
-    p_jac_init_em(&p_res1);
+    p_jac_cp(p_0, p);
 
-    p_jac_dbl(&p_res1, p_res0, module);
+    Point_jac p_1;
+    p_jac_init_em(&p_1);
+
+    p_jac_dbl(&p_1, *p_0, module);
+    int n = mpz_sizeinbase (k, 2);
+    
+    for (int i = n - 2; i >= 0; i--)
+    {
+        if (mpz_tstbit(k, i))
+        {
+            p_jac_add(&p_res_calc, *p_0, p_1, module);
+            p_jac_cp(p_0, p_res_calc);
+            p_jac_dbl(&p_res_calc, p_1, module);
+            p_jac_cp(&p_1, p_res_calc);
+        }
+        else
+        {
+            p_jac_add(&p_res_calc, p_1, *p_0, module);
+            p_jac_cp(&p_1, p_res_calc);
+            p_jac_dbl(&p_res_calc, *p_0, module);
+            p_jac_cp(p_0, p_res_calc);           
+        }
+    }
+
+    p_jac_clear(&p_res_calc);
+    p_jac_clear(&p_1);
+}
+
+void test_p_jac_mult_scal()
+{
+    printf("\nTest p_jac_mult_scal :\n\t");
+
+    Point_jac p_res, p;
+    Point_aff p_res_aff;
+    mpz_t k, module;
+
+    p_jac_init_em(&p_res);
+    p_jac_init(&p, 1, 5, 1);
+    p_aff_init_em(&p_res_aff);
+    mpz_init_set_ui(k, 3);
+    mpz_init_set_ui(module, 7);
+
+    p_jac_mult_scal(&p_res, p, k, module);
+    p_jac_to_p_aff(&p_res_aff, p_res, module);
+
+    p_jac_printf(p);
+    gmp_printf("\t  * %Zd = \n\t", k);
+    p_jac_printf(p_res);
+    printf("\t    =\n\t  ");
+    p_aff_printf(p_res_aff);
+
+    p_jac_clear(&p_res);
+    p_jac_clear(&p);
+    p_aff_clear(&p_res_aff);
+    mpz_clears(k, module, NULL);
+}
+
+void alice_bob()
+{
+    time_t t;
+    const int ordre = 13;
+    mpz_t a, b, module;
+    Point_aff p_A1_aff, p_B1_aff;
+    Point_jac p_j, p_A, p_B, p_A1, p_B1;
+
+    srand((unsigned) time(&t));
+
+    mpz_init_set_ui(a, (unsigned int) ((rand() % ordre) + 1));
+    mpz_init_set_ui(b, (unsigned int) ((rand() % ordre) + 1));
+    mpz_init_set_ui(module, 7);
+
+    p_aff_init_em(&p_A1_aff);
+    p_aff_init_em(&p_B1_aff);
+
+    p_jac_init(&p_j, 5, 3, 1);
+    p_jac_init_em(&p_A);
+    p_jac_init_em(&p_B);
+    p_jac_init_em(&p_A1);
+    p_jac_init_em(&p_B1);
+
+    p_jac_mult_scal(&p_A, p_j, a, module);
+    p_jac_mult_scal(&p_B, p_j, b, module);
+
+    p_jac_mult_scal(&p_A1, p_A, b, module);
+    p_jac_mult_scal(&p_B1, p_B, a, module);
+
+    p_jac_to_p_aff(&p_A1_aff, p_A1, module);
+    p_jac_to_p_aff(&p_B1_aff, p_B1, module);
 
 
-} */
+    gmp_printf("\nAlice et Bob \n\ta : %Zd, b : %Zd\n\t", a, b);
+    p_aff_printf(p_A1_aff);
+    printf("\t");
+    p_aff_printf(p_B1_aff);
+
+    mpz_clears(a, b, module, NULL);
+    p_aff_clear(&p_A1_aff);
+    p_aff_clear(&p_B1_aff);
+    p_jac_clear(&p_j);
+    p_jac_clear(&p_A);
+    p_jac_clear(&p_B);
+    p_jac_clear(&p_A1);
+    p_jac_clear(&p_B1);
+}
 
 int main(void)
 {
@@ -486,6 +593,9 @@ int main(void)
     test_p_jac_to_p_aff();
     test_p_jac_add();
     test_p_jac_dbl();
+    test_p_jac_mult_scal();
+
+    alice_bob();
 
     return 0;
 }

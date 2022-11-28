@@ -38,10 +38,11 @@ def test_mult_scal():
 
 
 def test_montgomery():
-    p = Point_jacob(5, 3, 1)
+    p = Point_jacob(1, 5, 1)
     print("Test montgomery")
-    print(p.mult_scal(8).to_affine())
-    print(p.montgomery(8).to_affine())
+    print(p.mult_scal(3).to_affine())
+    print(p.montgomery(3).to_affine())
+    print(p.montgomery(3))
 
 
 def alice_bob(p: Point_aff, ordre: int):
@@ -60,9 +61,10 @@ def alice_bob(p: Point_aff, ordre: int):
 
 if __name__ == "__main__":
     test_inversion_aff()
+    test_square_multiply()
+
     test_add_aff()
     test_double_aff()
-    test_square_multiply()
 
     test_add_jacob()
     test_mult_scal()
