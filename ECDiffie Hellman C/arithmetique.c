@@ -15,6 +15,12 @@ typedef struct
     mpz_t x, y, z;
 }Point_jac;
 
+typedef struct
+{
+    Point_jac c0, c1_pm;
+}Ciphertext;
+
+
 // Constant declaration
 #define A 0
 #define B 3
@@ -394,6 +400,18 @@ void test_p_jac_add()
     mpz_clear(module);
 }
 
+void p_jac_opp(Point_jac* p_res, const Point_jac p, const mpz_t module)
+{
+    mpz_t opp;
+    mpz_init(opp);
+
+    mpz_set(p_res->x, p.x);
+    mpz_sub(opp, module, p.y);
+    mpz_set(p_res->y, opp);
+    mpz_set(p_res->z, p.z);
+
+    mpz_clear(opp);
+}
 void p_jac_dbl(Point_jac* p_res, const Point_jac p, const mpz_t module)
 {
     mpz_t pow, mul, mod, a, b, c, e, f;
@@ -582,9 +600,109 @@ void alice_bob()
     p_jac_clear(&p_B1);
 }
 
+void cpt_aff(const Ciphertext cpt)
+{
+    p_jac_printf(cpt.c0);
+    p_jac_printf(cpt.c1_pm);
+}
+
+// EC Elgamal
+void ec_elgamal()
+{
+    // Initialisation
+    Point_jac p, y;
+    Point_aff y_pub;
+    mpz_t ordre, ordre_m1, module, x, rdm;
+    gmp_randstate_t state;
+
+    p_jac_init(&p, 6, 4, 1);
+    p_jac_init_em(&y);
+    p_aff_init_em(&y_pub);
+    mpz_init_set_ui(ordre, 13);
+    mpz_init_set_ui(module, 7);
+    mpz_inits(x, ordre_m1, rdm, NULL);
+
+    mpz_sub_ui(ordre_m1, ordre, 1);
+
+    // Generate public key
+    // 1.1.Generate random x
+    unsigned long seed = time(NULL);
+    gmp_randinit_default(state);
+    gmp_randseed_ui(state, seed);
+
+    mpz_urandomm(rdm, state, ordre_m1);
+    mpz_add_ui(x, rdm, 1);
+
+    // 1.2. Calculate our public key
+    p_jac_mult_scal(&y, p, x, module);
+    p_jac_to_p_aff(&y_pub, y, module);
+
+    printf("Public key is : ");
+    p_aff_printf(y_pub);
+    gmp_printf("x = %Zd\n", x);
+
+    // Encryption
+    Ciphertext cpt;
+    Point_jac c1, pm;
+    Point_aff pm_aff;
+    mpz_t k;
+
+    mpz_init(k);
+
+    p_jac_init_em(&cpt.c0);
+    p_jac_init_em(&cpt.c1_pm);
+    p_jac_init_em(&c1);
+    p_aff_init_em(&pm_aff);
+
+    // 2.1. Generate random k
+    mpz_urandomm(rdm, state, ordre_m1);
+    mpz_add_ui(k, rdm, 1);
+
+
+    p_jac_mult_scal(&cpt.c0, p, k, module);
+    p_jac_mult_scal(&c1, y, k, module);
+
+    p_jac_init(&pm, 2, 5, 1);
+
+    p_jac_add(&cpt.c1_pm, c1, pm, module);
+
+    printf("Encryption :\n\tPlain :");
+    p_jac_printf(pm);
+    p_jac_to_p_aff(&pm_aff, pm, module);
+    p_aff_printf(pm_aff);
+    printf("\tCiphertext :");
+    cpt_aff(cpt);
+
+    // Decryption
+    Point_jac minus_c1;
+    p_jac_init_em(&minus_c1);
+
+    p_jac_mult_scal(&c1, cpt.c0, x, module);
+    p_jac_opp(&minus_c1, c1, module);
+    p_jac_add(&pm, cpt.c1_pm, minus_c1, module);
+
+    printf("Decryption :\n\tPlain :");
+    p_jac_printf(pm);
+    p_jac_to_p_aff(&pm_aff, pm, module);
+    p_aff_printf(pm_aff);
+
+    //Faire les clear
+    p_jac_clear(&p);
+    p_jac_clear(&y);
+    p_aff_clear(&y_pub);
+    p_jac_clear(&cpt.c0);
+    p_jac_clear(&cpt.c1_pm);
+    p_jac_clear(&c1);
+    p_aff_clear(&pm_aff);
+    p_jac_clear(&pm);
+    p_jac_clear(&minus_c1);
+
+    mpz_clears(x, k, module, ordre, ordre_m1, rdm, NULL);
+}
+
 int main(void)
 {
-    test_inv_mult();
+/*     test_inv_mult();
     test_square_multiply();
 
     test_p_aff_add();
@@ -595,7 +713,9 @@ int main(void)
     test_p_jac_dbl();
     test_p_jac_mult_scal();
 
-    alice_bob();
+    alice_bob(); */
+
+    ec_elgamal();
 
     return 0;
 }
