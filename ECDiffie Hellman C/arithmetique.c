@@ -607,6 +607,33 @@ void cpt_aff(const Ciphertext cpt)
 }
 
 // EC Elgamal
+void f_mpz_to_p_aff(Point_aff* p, const mpz_t nb, const mpz_t module)
+{
+    mpz_t sub, r, add, k;
+
+    mpz_inits(sub, r, add, k, NULL);
+
+    mpz_sub_ui(sub, module, 3);
+    mpz_mod_ui (r, sub, 4);
+
+    if (mpz_cmp_ui(r, 0)) // Check if our module has the form " module = 4k+3" 
+    {
+        mpz_cdiv_q_ui(k, sub, 4);
+        
+        mpz_set(p->x, nb);
+
+        mpz_add_ui(add, k, 1);
+
+        //Trouver y^2  = x^3 + 3, puis on peut trouver y avec 
+
+        mpz_powm(p->y, add, module);
+    }
+    else
+        printf("Module is not supported. Need : module = 4k+3.\n");
+
+    mpz_clears(sub, r, add, k, NULL);
+}
+
 void ec_elgamal()
 {
     // Initialisation
@@ -715,7 +742,18 @@ int main(void)
 
     alice_bob(); */
 
-    ec_elgamal();
+    //ec_elgamal();
+
+    Point_aff p;
+    mpz_t nb, module;
+
+    p_aff_init_em(&p);
+    mpz_init_set_ui(nb, 2);
+    mpz_init_set_ui(module, 7);
+
+    f_mpz_to_p_aff(&p, nb, module);
+
+    p_aff_printf(p);
 
     return 0;
 }
