@@ -15,3 +15,6 @@ Idem, implémenté en C en utilisant la librairie gmp.
 GMP permet de travailler avec des entiers de tailles arbitraires.
 On est donc plus limité à 64bits.
 https://gmplib.org/manual/Integer-Functions
+Il faut ajouter -lgmp lors de la compilation lors d'utilisation de gmp.
+
+On implémente aussi ElGamal.
