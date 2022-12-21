@@ -15,8 +15,8 @@ class Point_aff:
     # def to_jacob(self) -> Point_jacob:
     #     return Point_jacob(self.x, self.y, 1)
 
-    def e_courbe_aff(self, a):
-        return self.y ** 2 == self.x ** 3 + a * self.x
+    def e_courbe_aff(self, a, b):
+        return self.y ** 2 == (self.x ** 3 + a * self.x + b)
 
 
 def add(p1, p2, p_corps: int = 7):
