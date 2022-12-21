@@ -25,9 +25,6 @@ typedef struct
 #define A 0
 #define B 3
 
-// Functiuns declaration
-
-
 // Function description
     // Operations on mpz_t type numbers
 void inv_mult(mpz_t* res, const mpz_t nb, const mpz_t module)
@@ -412,6 +409,7 @@ void p_jac_opp(Point_jac* p_res, const Point_jac p, const mpz_t module)
 
     mpz_clear(opp);
 }
+
 void p_jac_dbl(Point_jac* p_res, const Point_jac p, const mpz_t module)
 {
     mpz_t pow, mul, mod, a, b, c, e, f;
@@ -609,29 +607,32 @@ void cpt_aff(const Ciphertext cpt)
 // EC Elgamal
 void f_mpz_to_p_aff(Point_aff* p, const mpz_t nb, const mpz_t module)
 {
-    mpz_t sub, r, add, k;
+    mpz_t sub, r, add, k, pow;
 
-    mpz_inits(sub, r, add, k, NULL);
+    mpz_inits(sub, r, add, k, pow, NULL);
 
     mpz_sub_ui(sub, module, 3);
     mpz_mod_ui (r, sub, 4);
 
-    if (mpz_cmp_ui(r, 0)) // Check if our module has the form " module = 4k+3" 
+    if (mpz_cmp_ui(r, 0) == 0) // Check if our module has the form " module = 4k+3" 
     {
         mpz_cdiv_q_ui(k, sub, 4);
-        
+
         mpz_set(p->x, nb);
 
-        mpz_add_ui(add, k, 1);
+        // Find y^2  = x^3 + 3 
+        mpz_powm_ui(pow, nb, 3, module);
+        mpz_add_ui(sub, pow, 3);
+        mpz_mod(pow, sub, module);  // y^2
 
-        //Trouver y^2  = x^3 + 3, puis on peut trouver y avec 
-
-        mpz_powm(p->y, add, module);
+        // y = (y^2)^(k+1) [module]
+        mpz_add_ui(add, k, 1);  // k+1 
+        mpz_powm(p->y, sub, add, module);
     }
     else
         printf("Module is not supported. Need : module = 4k+3.\n");
 
-    mpz_clears(sub, r, add, k, NULL);
+    mpz_clears(sub, r, add, k, pow, NULL);
 }
 
 void ec_elgamal()
@@ -729,7 +730,7 @@ void ec_elgamal()
 
 int main(void)
 {
-/*     test_inv_mult();
+    test_inv_mult();
     test_square_multiply();
 
     test_p_aff_add();
@@ -740,9 +741,9 @@ int main(void)
     test_p_jac_dbl();
     test_p_jac_mult_scal();
 
-    alice_bob(); */
+    alice_bob();
 
-    //ec_elgamal();
+    ec_elgamal();
 
     Point_aff p;
     mpz_t nb, module;
